@@ -65,6 +65,7 @@ struct State {
 	diffuse_bind_group: wgpu::BindGroup,
 	diffuse_texture: texture::Texture,
 	camera: camera::Camera,
+	camera_controller: camera::CameraController,
 	camera_uniform: camera::CameraUniform,
 	camera_buffer: wgpu::Buffer,
 	camera_bind_group: wgpu::BindGroup,
@@ -182,6 +183,8 @@ impl State {
 			znear: 0.1,
 			zfar: 100.0,
 		};
+
+		let camera_controller = camera::CameraController::new(0.2);
 	
 		let mut camera_uniform = camera::CameraUniform::new();
 		camera_uniform.update_view_proj(&camera);
@@ -307,6 +310,7 @@ impl State {
 			diffuse_bind_group,
 			diffuse_texture,
 			camera,
+			camera_controller,
 			camera_uniform,
 			camera_buffer,
 			camera_bind_group,
@@ -324,7 +328,7 @@ impl State {
 	}
 
 	fn input(&mut self, event: &WindowEvent) -> bool {
-		match event {
+		/*match event {
 			WindowEvent::CursorMoved { position, .. } => {
 				self.clear_color = wgpu::Color {
 					r: position.to_logical(self.config.width as f64).x,
@@ -337,11 +341,15 @@ impl State {
 			}
 
 			_ => false
-		}
+		}*/
+
+		self.camera_controller.process_events(event)
 	}
 
 	fn update(&mut self) {
-
+		self.camera_controller.update_camera(&mut self.camera); 
+		self.camera_uniform.update_view_proj(&self.camera);
+		self.queue.write_buffer(&self.camera_buffer, 0, bytemuck::cast_slice(&[self.camera_uniform]));
 	}
 
 	fn render(&mut self) -> Result<(), wgpu::SurfaceError> {

@@ -124,7 +124,7 @@ impl CameraController {
 
         // Redo radius calc in case the forward/backward is pressed.
         let forward = camera.target - camera.eye;
-        let foward_mag = forward.magnitude();
+        let forward_mag = forward.magnitude();
 
         if self.is_right_pressed {
             // Rescale the distance between the target and eye so 

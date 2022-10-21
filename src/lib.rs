@@ -1,4 +1,5 @@
 use wgpu::{Backends, include_wgsl, util::DeviceExt};
+use wgpu_framework::pipeline::PipelineBuilder;
 use winit::{
 	event::*,
 	event_loop::{ControlFlow, EventLoop},
@@ -224,7 +225,10 @@ impl State {
 			label: Some("camera_bind_group"),
 		});
 
-		let shader = device.create_shader_module(include_wgsl!("shader.wgsl"));
+		//let shader = device.create_shader_module(include_wgsl!("shader.wgsl"));
+
+		let vertex = include_wgsl!("vertex.wgsl");
+		let fragment = include_wgsl!("fragment.wgsl");
 
 		let render_pipeline_layout =
 			device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -237,46 +241,21 @@ impl State {
 			}
 		);
 
-		let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-			label: Some("Render Pipeline"),
-			layout: Some(&render_pipeline_layout),
-			vertex: wgpu::VertexState {
-				module: &shader,
-				entry_point: "vs_main", // Vertex shader entry point function
-				buffers: &[ // Vertex buffers
-					Vertex::desc(),
-				],
-			},
-			fragment: Some(wgpu::FragmentState {
-				module: &shader,
-				entry_point: "fs_main", // Fragment shader entry point function
-				targets: &[Some(wgpu::ColorTargetState { // Output information
-					format: config.format,
-					blend: Some(wgpu::BlendState::REPLACE),
-					write_mask: wgpu::ColorWrites::ALL,
-				})],
-			}),
-			primitive: wgpu::PrimitiveState {
-				topology: wgpu::PrimitiveTopology::TriangleList, // Every three vertices correspond to one triangle
-				strip_index_format: None,
-				front_face: wgpu::FrontFace::Ccw,
-				cull_mode: Some(wgpu::Face::Back),
-				// Setting this to anything other than Fill requires Features::NON_FILL_POLYGON_MODE
-				polygon_mode: wgpu::PolygonMode::Fill,
-				// Requires Features::DEPTH_CLIP_CONTROL
-				unclipped_depth: false,
-				// Requires Features::CONSERVATIVE_RASTERIZATION
-				conservative: false,
-			},
+		let color_target_state = wgpu::ColorTargetState { // Output information
+			format: config.format,
+			blend: Some(wgpu::BlendState::REPLACE),
+			write_mask: wgpu::ColorWrites::ALL,
+		};
 
-			depth_stencil: None,
-			multisample: wgpu::MultisampleState {
-				count: 1,
-				mask: !0, // Use all samples
-				alpha_to_coverage_enabled: false,
-			},
-			multiview: None,
-		});
+		let render_pipeline =
+			PipelineBuilder::new()
+				.layout(&render_pipeline_layout)
+				.vertex_shader(vertex)
+				.vertex_buffer(Vertex::desc())
+				.fragment_shader(fragment)
+				.color_state(color_target_state)
+				.build(&device)
+				.unwrap();
 
 		let vertex_buffer = device.create_buffer_init(
 			&wgpu::util::BufferInitDescriptor {

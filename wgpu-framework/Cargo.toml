@@ -1,34 +1,14 @@
 [package]
-name = "learning_wgpu"
+name = "wgpu-framework"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[workspace]
-members = [
-    "wgpu-framework",
-]
-
 [dependencies]
-winit = "0.26"
-env_logger = "0.9"
-log = "0.4"
-pollster = "0.2.5"
-anyhow = "1.0.65"
-cgmath = "0.18.0"
-wgpu-framework = { path = "./wgpu-framework" }
+cfg-if = "1"
 wgpu = "0.13"
 bytemuck = { version = "1.12.1", features = [ "derive" ] }
-cfg-if = "1"
-
-[dependencies.image]
-version = "0.24.4"
-default-features = false
-features = ["png", "jpeg"]
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.6"

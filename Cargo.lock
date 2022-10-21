@@ -674,6 +674,7 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "wgpu",
+ "wgpu-framework",
  "winit",
 ]
 
@@ -1476,6 +1477,20 @@ dependencies = [
  "web-sys",
  "wgpu-hal",
  "wgpu-types",
+]
+
+[[package]]
+name = "wgpu-framework"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "cfg-if 1.0.0",
+ "console_error_panic_hook",
+ "console_log",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "wgpu",
 ]
 
 [[package]]
